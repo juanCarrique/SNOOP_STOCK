@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DOMAIN_STOCK.Models;
+namespace Domain.Models;
 
 public partial class Cliente
 {

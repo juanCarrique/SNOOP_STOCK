@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DOMAIN_STOCK.Models;
+namespace Domain.Models;
 
-public partial class Cliente
+public partial class Usuario
 {
     public int Id { get; set; }
 
@@ -15,5 +15,13 @@ public partial class Cliente
 
     public string? Telefono { get; set; }
 
+    public string Password { get; set; } = null!;
+
+    public int RolId { get; set; }
+
+    public bool Estado { get; set; }
+
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
+
+    public virtual Rol Rol { get; set; } = null!;
 }

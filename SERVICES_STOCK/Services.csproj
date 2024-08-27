@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DAO_STOCK\DAO_STOCK.csproj" />
-    <ProjectReference Include="..\DTO_STOCK\DTO_STOCK.csproj" />
+    <ProjectReference Include="..\DAO_STOCK\DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

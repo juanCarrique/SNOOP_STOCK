@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DOMAIN_STOCK.Models;
+namespace Domain.Models;
 
-public partial class Rol
+public partial class Permiso
 {
     public int Id { get; set; }
 
@@ -12,6 +12,4 @@ public partial class Rol
     public string? Descripcion { get; set; }
 
     public virtual ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
-
-    public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

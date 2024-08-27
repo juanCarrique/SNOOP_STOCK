@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DTO_STOCK;
-using SERVICES_STOCK;
-using DATA_STOCK.Models;
+using Services;
+using Domain.Models;
 
 namespace APP_STOCK.Controllers
 {

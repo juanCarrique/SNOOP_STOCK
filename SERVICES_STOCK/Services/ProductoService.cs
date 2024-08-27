@@ -1,9 +1,8 @@
-﻿using DAO_STOCK;
-using DATA_STOCK.Models;
-using DTO_STOCK;
+﻿using DataAccess;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace SERVICES_STOCK
+namespace Services
 {
     public class ProductoService
     {

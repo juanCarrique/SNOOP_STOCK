@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DATA_STOCK.Models;
+namespace DOMAIN_STOCK.Models;
 
 public partial class Permiso
 {

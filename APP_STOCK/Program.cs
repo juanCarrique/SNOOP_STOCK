@@ -1,7 +1,7 @@
-using DAO_STOCK.Context;
-using DAO_STOCK;
+using DataAccess;
+using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
-using SERVICES_STOCK;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,8 +1,8 @@
-﻿using DAO_STOCK.Context;
-using DATA_STOCK.Models;
+﻿using DataAccess.Context;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAO_STOCK
+namespace DataAccess
 {
     public class ProductoDAO
     {
