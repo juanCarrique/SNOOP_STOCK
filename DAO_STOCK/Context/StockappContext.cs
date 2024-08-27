@@ -1,7 +1,7 @@
 ﻿using DATA_STOCK.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DATA_STOCK.Context
+namespace DAO_STOCK.Context
 {
     public partial class StockappContext : DbContext
     {

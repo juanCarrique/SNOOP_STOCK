@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DAO_STOCK\DAO_STOCK.csproj" />
     <ProjectReference Include="..\SERVICES_STOCK\SERVICES_STOCK.csproj" />
   </ItemGroup>
 

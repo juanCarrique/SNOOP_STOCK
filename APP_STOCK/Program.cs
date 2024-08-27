@@ -1,4 +1,4 @@
-using DATA_STOCK.Context;
+using DAO_STOCK.Context;
 using DAO_STOCK;
 using Microsoft.EntityFrameworkCore;
 using SERVICES_STOCK;

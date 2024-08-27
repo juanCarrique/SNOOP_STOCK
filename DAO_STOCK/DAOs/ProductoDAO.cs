@@ -1,4 +1,4 @@
-﻿using DATA_STOCK.Context;
+﻿using DAO_STOCK.Context;
 using DATA_STOCK.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +20,7 @@ namespace DAO_STOCK
 
         public async Task<Producto> GetProducto(int id)
         {
-            #pragma warning disable CS8603 // Posible tipo de valor devuelto de referencia nulo
             return await _context.Productos.FindAsync(id);
-            #pragma warning restore CS8603 // Posible tipo de valor devuelto de referencia nulo
         }
 
         public void AddProducto(Producto producto)

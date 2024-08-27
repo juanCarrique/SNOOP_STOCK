@@ -1,4 +1,4 @@
-﻿using DATA_STOCK.Context;
+﻿using DAO_STOCK.Context;
 using DATA_STOCK.Models;
 
 namespace DAO_STOCK
