@@ -48,6 +48,42 @@ namespace Services.Services
             };
         }
 
+        public async Task<ProductoDTO> GetProductoByReposicionId(int id)
+        {
+            Reposicion reposicion = await _reposicionDAO.GetReposicion(id);
+            Producto producto = reposicion.Producto;
+
+
+            if (producto == null)
+            {
+                throw new ArgumentException("Producto not found for the given Reposicion ID.");
+    }
+
+            return new ProductoDTO
+            {
+                Id = producto.Id,
+                Detalle = producto.Detalle,
+                Precio = producto.Precio,
+                CategoriaId = producto.CategoriaId,
+                Stock = producto.Stock,
+                StockMinimo = producto.StockMinimo
+            };
+        }
+
+        public async Task<ProveedorDTO> GetProveedorByReposicionId(int id)
+        {
+            Reposicion reposicion = await _reposicionDAO.GetReposicion(id);
+            Proveedor proveedor = reposicion.Proveedor;
+
+            return new ProveedorDTO
+            {
+                Id = proveedor.Id,
+                Nombre = proveedor.Nombre,
+                Telefono = proveedor.Telefono,
+                Mail = proveedor.Mail
+            };
+        }
+
         public async Task<bool> PutReposicion(ReposicionDTO reposicionDTO)
         {
             try

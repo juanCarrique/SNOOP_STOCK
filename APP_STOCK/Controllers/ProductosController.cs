@@ -39,6 +39,19 @@ namespace AppStock.Controllers
             return Ok(producto);
         }
 
+        // GET: api/Productos/5/Categoria
+        [HttpGet("{id}/Categoria")]
+        public async Task<ActionResult<Categoria>> GetCategoriaByProductoId(int id)
+        {
+            if (!await ProductoExists(id))
+            {
+                return NotFound("Producto no encontrado.");
+            }
+
+            var categoria = await _productoService.GetCategoriaByProductoId(id);
+            return Ok(categoria);
+        }
+
         //PUT: api/Productoes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

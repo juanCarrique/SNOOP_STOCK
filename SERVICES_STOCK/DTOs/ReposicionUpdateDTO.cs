@@ -8,7 +8,6 @@ namespace Services
 {
     public class ReposicionUpdateDTO
     {
-
         public int? ProductoId { get; set; }
 
         public int? ProveedorId { get; set; }

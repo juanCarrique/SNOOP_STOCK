@@ -183,5 +183,17 @@ namespace Services.Services
                 throw;
             }
         }
+
+        public async Task<CategoriaDTO> GetCategoriaByProductoId(int productoId)
+        {
+            Producto producto = await _productoDAO.GetProducto(productoId);
+            Categoria categoria = producto.Categoria;
+
+            return new CategoriaDTO
+            {
+                Id = categoria.Id,
+                Nombre = categoria.Nombre
+            };
+        }
     }
 }

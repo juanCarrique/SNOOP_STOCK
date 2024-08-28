@@ -48,6 +48,48 @@ namespace Services.Services
             };
         }
 
+        public async Task<ProductoDTO> GetComponenteByComposicionId(int id)
+        {
+            Composicion composicion = await _composicionDAO.GetComposicion(id);
+            Producto componente = composicion.Componente;
+
+            if (componente == null)
+            {
+                return null;
+            }
+
+            return new ProductoDTO
+            {
+                Id = componente.Id,
+                Detalle = componente.Detalle,
+                Precio = componente.Precio,
+                CategoriaId = componente.CategoriaId,
+                Stock = componente.Stock,
+                StockMinimo = componente.StockMinimo
+            };
+        }
+
+        public async Task<ProductoDTO> GetProductoByComposicionId(int id)
+        {
+            Composicion composicion = await _composicionDAO.GetComposicion(id);
+            Producto producto = composicion.Producto;
+
+            if (producto == null)
+            {
+                return null;
+            }
+
+            return new ProductoDTO
+            {
+                Id = producto.Id,
+                Detalle = producto.Detalle,
+                Precio = producto.Precio,
+                CategoriaId = producto.CategoriaId,
+                Stock = producto.Stock,
+                StockMinimo = producto.StockMinimo
+            };
+        }
+
         public async Task<bool> PutComposicion(ComposicionDTO composicionDTO)
         {
             try

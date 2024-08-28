@@ -46,6 +46,45 @@ namespace AppStock.Controllers
             return Ok(reposicion);
         }
 
+        // GET: api/Reposiciones/5/Producto
+        [HttpGet("{id}/Producto")]
+        public async Task<ActionResult<Producto>> GetProductoByReposicionId(int id)
+        {
+            if(!await ReposicionExists(id))
+            {
+                return NotFound("Reposicion no encontrada.");
+            }
+
+
+            var producto = await _reposicionService.GetProductoByReposicionId(id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(producto);
+        }
+
+        // GET: api/Reposiciones/5/Proveedor
+        [HttpGet("{id}/Proveedor")]
+        public async Task<ActionResult<Proveedor>> GetProveedorByReposicionId(int id)
+        {
+            if (!await ReposicionExists(id))
+            {
+                return NotFound("Reposicion no encontrada.");
+            }
+
+            var proveedor = await _reposicionService.GetProveedorByReposicionId(id);
+
+            if (proveedor == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(proveedor);
+        }
+
         // PUT: api/Reposiciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

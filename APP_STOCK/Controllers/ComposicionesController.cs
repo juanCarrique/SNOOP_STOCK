@@ -43,6 +43,44 @@ namespace AppStock.Controllers
             return Ok(composicion);
         }
 
+        // GET: api/Composiciones/5/Componente
+        [HttpGet("{id}/Componente")]
+        public async Task<ActionResult<Producto>> GetComponenteByComposicionId(int id)
+        {
+            if(!await ComposicionExists(id))
+            {
+                return NotFound("Composicion no encontrada.");
+            }
+
+            var componente = await _composicionService.GetComponenteByComposicionId(id);
+
+            if (componente == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(componente);
+        }
+
+        // GET: api/Composicioens/5/Producto
+        [HttpGet("{id}/Producto")]
+        public async Task<ActionResult<Producto>> GetProductoByComposicionId(int id)
+        {
+            if (!await ComposicionExists(id))
+            {
+                return NotFound("Composicion no encontrada.");
+            }
+
+            var producto = await _composicionService.GetProductoByComposicionId(id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(producto);
+        }
+
         // PUT: api/Composicions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
