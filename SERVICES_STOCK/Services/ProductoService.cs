@@ -2,7 +2,7 @@
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Services
+namespace Services.Services
 {
     public class ProductoService
     {

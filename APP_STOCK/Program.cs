@@ -1,7 +1,7 @@
 using DataAccess;
 using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
-using Services;
+using Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +14,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Agrego servicios
 builder.Services.AddScoped<ProductoService>();
-builder.Services.AddScoped<ProductoDAO>();
+builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<ComposicionService>();
+builder.Services.AddScoped<ProveedoresService>();
+builder.Services.AddScoped<ReposicionService>();
 // Agrego DAOs
+builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
+builder.Services.AddScoped<ComposicionDAO>();
+builder.Services.AddScoped<ProveedorDAO>();
+builder.Services.AddScoped<ReposicionDAO>();
 builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
     );

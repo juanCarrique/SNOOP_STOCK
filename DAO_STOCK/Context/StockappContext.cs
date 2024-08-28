@@ -18,7 +18,7 @@ namespace DataAccess.Context
 
         public virtual DbSet<Cliente> Clientes { get; set; }
 
-        public virtual DbSet<Composicion> Composicions { get; set; }
+        public virtual DbSet<Composicion> Composiciones { get; set; }
 
         public virtual DbSet<Factura> Facturas { get; set; }
 
@@ -30,11 +30,11 @@ namespace DataAccess.Context
 
         public virtual DbSet<Producto> Productos { get; set; }
 
-        public virtual DbSet<Proveedor> Proveedors { get; set; }
+        public virtual DbSet<Proveedor> Proveedores { get; set; }
 
-        public virtual DbSet<Reposicion> Reposicions { get; set; }
+        public virtual DbSet<Reposicion> Reposiciones { get; set; }
 
-        public virtual DbSet<Rol> Rols { get; set; }
+        public virtual DbSet<Rol> Roles { get; set; }
 
         public virtual DbSet<RolPermiso> RolPermisos { get; set; }
 

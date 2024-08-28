@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Services;
+using Services.Services;
 using Domain.Models;
+using Services;
 
-namespace APP_STOCK.Controllers
+namespace AppStock.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductoController : ControllerBase
+    public class ProductosController : ControllerBase
     {
         private readonly ProductoService _productoService;
 
-        public ProductoController(ProductoService productoService)
+        public ProductosController(ProductoService productoService)
         {
             _productoService = productoService;
         }
@@ -63,7 +64,6 @@ namespace APP_STOCK.Controllers
             }
             catch (ArgumentException ex)
             {
-                // Retorna 400 Bad Request con el mensaje de error
                 return BadRequest(ex.Message);
             }
             catch (DbUpdateConcurrencyException)
