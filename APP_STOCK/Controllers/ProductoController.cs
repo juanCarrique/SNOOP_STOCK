@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Services;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APP_STOCK.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductoController : ControllerBase
