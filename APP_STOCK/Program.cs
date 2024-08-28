@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Services;
+using Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddSwaggerGen();
 
 // Agrego servicios
 builder.Services.AddScoped<ProductoService>();
+builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<ProductoDAO>();
 // Agrego DAOs
 builder.Services.AddScoped<CategoriaDAO>();
@@ -24,20 +26,18 @@ builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );
 
-// Configuración de la autenticación JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            //ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+        };
+    });
 
 var app = builder.Build();
 
@@ -57,3 +57,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+/*
+{
+  "mail": "carlos@mail.com",
+  "password": "password1"
+}
+*/
