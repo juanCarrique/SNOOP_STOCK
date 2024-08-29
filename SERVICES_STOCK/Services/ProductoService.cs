@@ -8,11 +8,13 @@ namespace Services.Services
     {
         private readonly ProductoDAO _productoDAO;
         private readonly CategoriaDAO _categoriaDAO;
+        private readonly ComposicionDAO _composicionDAO;
 
-        public ProductoService(ProductoDAO productoDAO, CategoriaDAO categoriaDAO)
+        public ProductoService(ProductoDAO productoDAO, CategoriaDAO categoriaDAO, ComposicionDAO composicionDAO)
         {
             _productoDAO = productoDAO;
             _categoriaDAO = categoriaDAO;
+            _composicionDAO = composicionDAO;
         }
 
         public async Task<IEnumerable<ProductoDTO>> GetProductos()
@@ -115,6 +117,36 @@ namespace Services.Services
             return producto.Id;
         }
 
+        public async Task<int> PostProductoCompuesto(ProductoCompuestoDTO productoCompuestoDTO)
+        {
+            var categoria = await _categoriaDAO.GetCategoria(productoCompuestoDTO.CategoriaId);
+
+            if (categoria == null)
+            {
+                // Retorna 400 Bad Request si la categoría no existe
+                throw new ArgumentException("La categoría proporcionada no existe.");
+            }
+
+            int stock = await CalcularStockPorComponentes(productoCompuestoDTO.Componentes);
+
+            var producto = new Producto
+            {
+                Detalle = productoCompuestoDTO.Detalle,
+                Precio = productoCompuestoDTO.Precio,
+                Categoria = categoria,
+                Stock = stock,
+                StockMinimo = productoCompuestoDTO.StockMinimo
+            };
+
+            _productoDAO.AddProducto(producto);
+
+            await _productoDAO.SaveChangesAsync();
+
+            await AgregarComponentes(producto, productoCompuestoDTO.Componentes);
+
+            return producto.Id;
+        }
+
         public async Task<bool> DeleteProducto(int id)
         {
             var producto = await _productoDAO.GetProducto(id);
@@ -194,6 +226,40 @@ namespace Services.Services
                 Id = categoria.Id,
                 Nombre = categoria.Nombre
             };
+        }
+
+        private async Task<int> CalcularStockPorComponentes(ICollection<ComponenteDTO> componentes)
+        {
+            int stock = int.MaxValue;
+
+            foreach (var componente in componentes)
+            {
+                Producto producto = await _productoDAO.GetProducto(componente.ComponenteId);
+                int stockComponente = (int)Math.Floor((double)producto.Stock / componente.Cantidad);
+                stock = Math.Min(stockComponente,stock);
+            }
+
+            return stock;
+        }
+
+        private async Task AgregarComponentes(Producto producto, ICollection<ComponenteDTO> componentes)
+        {
+
+            foreach (var componente in componentes)
+            {
+                Producto componenteProducto = await _productoDAO.GetProducto(componente.ComponenteId);
+                Composicion composicion = new Composicion
+                {
+                    Producto = producto,
+                    Componente = componenteProducto,
+                    Cantidad = componente.Cantidad
+                };
+
+                _composicionDAO.AddComposicion(composicion);
+            }
+
+            await _composicionDAO.SaveChangesAsync();
+
         }
     }
 }

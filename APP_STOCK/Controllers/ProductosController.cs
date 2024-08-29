@@ -19,7 +19,7 @@ namespace AppStock.Controllers
 
         // GET: api/Productos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
+        public async Task<ActionResult<IEnumerable<ProductoDTO>>> GetProductos()
         {
             var productos = await _productoService.GetProductos();
             return Ok(productos);
@@ -27,7 +27,7 @@ namespace AppStock.Controllers
 
         // GET: api/Productos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Producto>> GetProducto(int id)
+        public async Task<ActionResult<ProductoDTO>> GetProducto(int id)
         {
             var producto = await _productoService.GetProducto(id);
 
@@ -41,7 +41,7 @@ namespace AppStock.Controllers
 
         // GET: api/Productos/5/Categoria
         [HttpGet("{id}/Categoria")]
-        public async Task<ActionResult<Categoria>> GetCategoriaByProductoId(int id)
+        public async Task<ActionResult<CategoriaDTO>> GetCategoriaByProductoId(int id)
         {
             if (!await ProductoExists(id))
             {
@@ -96,7 +96,7 @@ namespace AppStock.Controllers
         // POST: api/Productoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Producto>> PostProducto(ProductoDTO productoDTO)
+        public async Task<ActionResult<ProductoDTO>> PostProducto(ProductoDTO productoDTO)
         {
 
             if (productoDTO == null)
@@ -114,6 +114,35 @@ namespace AppStock.Controllers
                 }
 
                 return CreatedAtAction(nameof(GetProducto), new { id = productoId }, productoDTO);
+            }
+            catch (ArgumentException ex)
+            {
+                // Retorna 400 Bad Request con el mensaje de error
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST: api/Productoes
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("Compuesto")]
+        public async Task<ActionResult<ProductoDTO>> PostProductoCompuesto(ProductoCompuestoDTO productoCompuestoDTO)
+        {
+
+            if (productoCompuestoDTO == null)
+            {
+                return BadRequest("Datos del producto no proporcionados.");
+            }
+
+            try
+            {
+                var productoId = await _productoService.PostProductoCompuesto(productoCompuestoDTO);
+
+                if (productoId == 0)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el producto.");
+                }
+
+                return CreatedAtAction(nameof(GetProducto), new { id = productoId }, productoCompuestoDTO);
             }
             catch (ArgumentException ex)
             {

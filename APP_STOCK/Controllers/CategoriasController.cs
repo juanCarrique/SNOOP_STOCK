@@ -19,7 +19,7 @@ namespace AppStock.Controllers
 
         // GET: api/Categorias
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategorias()
         {
             var categorias = await _categoriaService.GetCategorias();
             return Ok(categorias);
@@ -27,7 +27,7 @@ namespace AppStock.Controllers
 
         // GET: api/Categorias/id
         [HttpGet("{id}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        public async Task<ActionResult<CategoriaDTO>> GetCategoria(int id)
         {
             var categorias = await _categoriaService.GetCategoria(id);
 
@@ -83,7 +83,7 @@ namespace AppStock.Controllers
         // POST: api/Categorias
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(CategoriaDTO categoriaDTO)
+        public async Task<ActionResult<CategoriaDTO>> PostCategoria(CategoriaDTO categoriaDTO)
         {
 
             if (categoriaDTO == null)

@@ -48,46 +48,22 @@ namespace Services.Services
             };
         }
 
-        public async Task<ProductoDTO> GetComponenteByComposicionId(int id)
+        public async Task<IEnumerable<ProductoDTO>> GetComponentesByProductoId(int id)
         {
-            Composicion composicion = await _composicionDAO.GetComposicion(id);
-            Producto componente = composicion.Componente;
+            var composiciones = await _composicionDAO.GetComposicionesByProductoId(id);
+            var productos = composiciones.Select(c => c.Componente).ToList();
 
-            if (componente == null)
+            var productosDTO = productos.Select(p => new ProductoDTO
             {
-                return null;
-            }
+                Id = p.Id,
+                Detalle = p.Detalle,
+                Precio = p.Precio,
+                CategoriaId = p.CategoriaId,
+                Stock = p.Stock,
+                StockMinimo = p.StockMinimo
+            }).ToList();
 
-            return new ProductoDTO
-            {
-                Id = componente.Id,
-                Detalle = componente.Detalle,
-                Precio = componente.Precio,
-                CategoriaId = componente.CategoriaId,
-                Stock = componente.Stock,
-                StockMinimo = componente.StockMinimo
-            };
-        }
-
-        public async Task<ProductoDTO> GetProductoByComposicionId(int id)
-        {
-            Composicion composicion = await _composicionDAO.GetComposicion(id);
-            Producto producto = composicion.Producto;
-
-            if (producto == null)
-            {
-                return null;
-            }
-
-            return new ProductoDTO
-            {
-                Id = producto.Id,
-                Detalle = producto.Detalle,
-                Precio = producto.Precio,
-                CategoriaId = producto.CategoriaId,
-                Stock = producto.Stock,
-                StockMinimo = producto.StockMinimo
-            };
+            return productosDTO;
         }
 
         public async Task<bool> PutComposicion(ComposicionDTO composicionDTO)

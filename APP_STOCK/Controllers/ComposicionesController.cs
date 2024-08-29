@@ -23,7 +23,7 @@ namespace AppStock.Controllers
 
         // GET: api/Composiciones
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Composicion>>> GetComposiciones()
+        public async Task<ActionResult<IEnumerable<ComposicionDTO>>> GetComposiciones()
         {
             var composiciones = await _composicionService.GetComposiciones();
             return Ok(composiciones);
@@ -31,7 +31,7 @@ namespace AppStock.Controllers
 
         // GET: api/Composicions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Composicion>> GetComposicion(int id)
+        public async Task<ActionResult<ComposicionDTO>> GetComposicion(int id)
         {
             var composicion = await _composicionService.GetComposicion(id);
 
@@ -44,41 +44,22 @@ namespace AppStock.Controllers
         }
 
         // GET: api/Composiciones/5/Componente
-        [HttpGet("{id}/Componente")]
-        public async Task<ActionResult<Producto>> GetComponenteByComposicionId(int id)
+        [HttpGet("{id}/Componentes")]
+        public async Task<ActionResult<IEnumerable<ProductoDTO>>> GetComponentesByProductoId(int id)
         {
             if(!await ComposicionExists(id))
             {
                 return NotFound("Composicion no encontrada.");
             }
 
-            var componente = await _composicionService.GetComponenteByComposicionId(id);
+            var componentes = await _composicionService.GetComponentesByProductoId(id);
 
-            if (componente == null)
+            if (componentes == null)
             {
                 return NotFound();
             }
 
-            return Ok(componente);
-        }
-
-        // GET: api/Composicioens/5/Producto
-        [HttpGet("{id}/Producto")]
-        public async Task<ActionResult<Producto>> GetProductoByComposicionId(int id)
-        {
-            if (!await ComposicionExists(id))
-            {
-                return NotFound("Composicion no encontrada.");
-            }
-
-            var producto = await _composicionService.GetProductoByComposicionId(id);
-
-            if (producto == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(producto);
+            return Ok(componentes);
         }
 
         // PUT: api/Composicions/5
@@ -123,7 +104,7 @@ namespace AppStock.Controllers
         // POST: api/Composicions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Composicion>> PostComposicion(ComposicionDTO composicionDTO)
+        public async Task<ActionResult<ComposicionDTO>> PostComposicion(ComposicionDTO composicionDTO)
         {
             if (composicionDTO == null)
             {

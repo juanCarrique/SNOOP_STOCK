@@ -29,6 +29,15 @@ namespace DataAccess
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<IEnumerable<Composicion>> GetComposicionesByProductoId(int id)
+        {
+            return await _context.Composiciones
+                .Include(c => c.Producto)
+                .Include(c => c.Componente)
+                .Where(c => c.ProductoId == id)
+                .ToListAsync();
+        }
+
         public void AddComposicion(Composicion composicion)
         {
             _context.Composiciones.Add(composicion);

@@ -225,7 +225,7 @@ namespace Services.Services
 
         private async Task<Reposicion> ActualizarReposicion(Reposicion reposicion, ReposicionUpdateDTO reposicionUpdateDTO)
         {
-            // TODO - Pulir lógica de actualización de stock
+            
             var productoAnterior = await _productoDAO.GetProducto(reposicion.ProductoId);
 
             Reposicion reposicionNueva = reposicion;
