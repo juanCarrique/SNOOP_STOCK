@@ -49,9 +49,16 @@ builder.Services.AddSwaggerGen(c => // esto remplaza a builder.Services.AddEndpo
 // Agrego servicios
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<ProductoDAO>();
+builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<ComposicionService>();
+builder.Services.AddScoped<ProveedoresService>();
+builder.Services.AddScoped<ReposicionService>();
 // Agrego DAOs
+builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
+builder.Services.AddScoped<ComposicionDAO>();
+builder.Services.AddScoped<ProveedorDAO>();
+builder.Services.AddScoped<ReposicionDAO>();
 builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );
@@ -80,7 +87,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Habilitar autenticación y autorización
+// Habilitar autenticaciï¿½n y autorizaciï¿½n
 app.UseAuthentication();
 app.UseAuthorization();
 
