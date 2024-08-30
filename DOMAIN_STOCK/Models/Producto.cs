@@ -25,7 +25,7 @@ public partial class Producto
 
     public virtual ICollection<HistorialMovimiento> HistorialMovimientos { get; set; } = new List<HistorialMovimiento>();
 
-    public virtual ICollection<ItemFactura> ItemFacturas { get; set; } = new List<ItemFactura>();
+    public virtual ICollection<ItemFactura> ItemsFactura { get; set; } = new List<ItemFactura>();
 
     public virtual ICollection<Reposicion> Reposicions { get; set; } = new List<Reposicion>();
 }

@@ -15,7 +15,9 @@ namespace DataAccess
 
         public async Task<IEnumerable<Producto>> GetProductos()
         {
-            return await _context.Productos.Include(p => p.Categoria).ToListAsync();
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                .ToListAsync();
         }
 
         public async Task<Producto> GetProducto(int id)

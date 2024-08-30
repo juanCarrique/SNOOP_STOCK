@@ -101,9 +101,7 @@ namespace AppStock.Controllers
         {
 
             if (productoDTO == null)
-            {
                 return BadRequest("Datos del producto no proporcionados.");
-            }
 
             try
             {
