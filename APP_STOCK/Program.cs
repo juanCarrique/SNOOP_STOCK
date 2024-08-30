@@ -7,6 +7,7 @@ using System.Text;
 using Services;
 using Services.Services;
 using Microsoft.OpenApi.Models;
+using DataAccess.DAOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +54,9 @@ builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<ComposicionService>();
 builder.Services.AddScoped<ProveedoresService>();
 builder.Services.AddScoped<ReposicionService>();
+builder.Services.AddScoped<RolService>();
 // Agrego DAOs
+builder.Services.AddScoped<RolDAO>();
 builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
 builder.Services.AddScoped<ComposicionDAO>();
