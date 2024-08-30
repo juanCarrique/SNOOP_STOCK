@@ -20,7 +20,9 @@ namespace DataAccess
 
         public async Task<Producto> GetProducto(int id)
         {
-            return await _context.Productos.FindAsync(id);
+            return await _context.Productos
+                .Include(p => p.Categoria)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public void AddProducto(Producto producto)
