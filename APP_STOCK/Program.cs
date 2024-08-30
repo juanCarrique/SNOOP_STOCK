@@ -53,12 +53,14 @@ builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<ComposicionService>();
 builder.Services.AddScoped<ProveedoresService>();
 builder.Services.AddScoped<ReposicionService>();
+builder.Services.AddScoped<ClienteService>();
 // Agrego DAOs
 builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
 builder.Services.AddScoped<ComposicionDAO>();
 builder.Services.AddScoped<ProveedorDAO>();
 builder.Services.AddScoped<ReposicionDAO>();
+builder.Services.AddScoped<ClienteDAO>();
 builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );

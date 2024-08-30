@@ -42,23 +42,19 @@ namespace AppStock.Controllers
         // PUT: api/Proveedores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProveedor(int id, ProveedorDTO proveedorDTO)
+        public async Task<ActionResult> PutProveedor(int id, ProveedorDTO proveedorDTO)
         {
             if (id != proveedorDTO.Id)
-            {
                 return BadRequest("El ID del proveedor no coincide.");
-            }
 
             try
             {
                 var resultado = await _proveedoresService.PutProveedor(proveedorDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Proveedor no encontrado.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
 
             }
             catch (ArgumentException ex)
@@ -81,7 +77,7 @@ namespace AppStock.Controllers
             // POST: api/Proveedores
             // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
             [HttpPost]
-            public async Task<ActionResult<Proveedor>> PostProveedor(ProveedorDTO proveedorDTO)
+            public async Task<ActionResult<int>> PostProveedor(ProveedorDTO proveedorDTO)
             {
                 if (proveedorDTO == null)
                 {
@@ -93,11 +89,9 @@ namespace AppStock.Controllers
                     var proveedorId = await _proveedoresService.PostProveedor(proveedorDTO);
 
                     if (proveedorId == 0)
-                    {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el proveedor.");
-                    }
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el proveedor.");
 
-                    return CreatedAtAction(nameof(GetProveedor), new { id = proveedorId }, proveedorDTO);
+                return CreatedAtAction(nameof(GetProveedor), new { id = proveedorId }, proveedorId);
                 }
                 catch (ArgumentException ex)
                 {
@@ -108,36 +102,30 @@ namespace AppStock.Controllers
 
             // DELETE: api/Proveedores/5
             [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteProveedor(int id)
+            public async Task<ActionResult<ProveedorDTO>> DeleteProveedor(int id)
             {
                 var resultado = await _proveedoresService.DeleteProveedor(id);
 
-                if (!resultado)
-                {
-                    return NotFound();
-                }
+                if (resultado == null)
+                return NotFound("Proveedor no encotrado.");
 
-                return NoContent();
+            return Ok(resultado);
             }
 
             [HttpPatch("{id}")]
-            public async Task<IActionResult> PatchProveedor(int id, ProveedorUpdateDTO proveedorUpdateDTO)
+            public async Task<ActionResult<ProveedorDTO>> PatchProveedor(int id, ProveedorUpdateDTO proveedorUpdateDTO)
             {
                 if (proveedorUpdateDTO == null)
-                {
                     return BadRequest("Datos del proveedor no proporcionados.");
-                }
 
                 try
                 {
                     var resultado = await _proveedoresService.PatchProveedor(id, proveedorUpdateDTO);
 
-                    if (!resultado)
-                    {
+                    if (resultado == null)
                         return NotFound("Proveedor no encontrado.");
-                    }
 
-                    return NoContent();
+                    return Ok(resultado);
                 }
                 catch (ArgumentException ex)
                 {

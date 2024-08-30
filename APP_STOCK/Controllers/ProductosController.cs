@@ -57,7 +57,7 @@ namespace AppStock.Controllers
         //PUT: api/Productoes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProducto(int id, ProductoDTO productoDTO)
+        public async Task<ActionResult<ProductoDTO>> PutProducto(int id, ProductoDTO productoDTO)
         {
             if (id != productoDTO.Id)
             {
@@ -69,12 +69,11 @@ namespace AppStock.Controllers
             {
                 var resultado = await _productoService.PutProducto(productoDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Producto no encontrado.");
-                }
+                
 
-                return NoContent();
+                return resultado;
 
             }
             catch (ArgumentException ex)
@@ -98,7 +97,7 @@ namespace AppStock.Controllers
         // POST: api/Productoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProductoDTO>> PostProducto(ProductoDTO productoDTO)
+        public async Task<ActionResult<int>> PostProducto(ProductoDTO productoDTO)
         {
 
             if (productoDTO == null)
@@ -115,7 +114,7 @@ namespace AppStock.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el producto.");
                 }
 
-                return CreatedAtAction(nameof(GetProducto), new { id = productoId }, productoDTO);
+                return CreatedAtAction("GetProducto", new { id = productoId }, productoId);
             }
             catch (ArgumentException ex)
             {
@@ -127,7 +126,7 @@ namespace AppStock.Controllers
         // POST: api/Productoes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("Compuesto")]
-        public async Task<ActionResult<ProductoDTO>> PostProductoCompuesto(ProductoCompuestoDTO productoCompuestoDTO)
+        public async Task<ActionResult<int>> PostProductoCompuesto(ProductoCompuestoDTO productoCompuestoDTO)
         {
 
             if (productoCompuestoDTO == null)
@@ -148,43 +147,36 @@ namespace AppStock.Controllers
             }
             catch (ArgumentException ex)
             {
-                // Retorna 400 Bad Request con el mensaje de error
                 return BadRequest(ex.Message);
             }
         }
 
         // DELETE: api/Productoes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProducto(int id)
+        public async Task<ActionResult<ProductoDTO>> DeleteProducto(int id)
         {
             var resultado = await _productoService.DeleteProducto(id);
 
-            if (!resultado)
-            {
-                return NotFound();
-            }
+            if (resultado == null)
+                return NotFound("Producto no encontrado.");
 
-            return NoContent();
+            return Ok(resultado);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchProducto(int id, ProductoUpdateDTO productoUpdateDTO)
+        public async Task<ActionResult<ProductoDTO>> PatchProducto(int id, ProductoUpdateDTO productoUpdateDTO)
         {
             if (productoUpdateDTO == null)
-            {
                 return BadRequest("Datos del producto no proporcionados.");
-            }
 
             try
             {
                 var resultado = await _productoService.PatchProducto(id, productoUpdateDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Producto no encontrado.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
             }
             catch (ArgumentException ex)
             {
