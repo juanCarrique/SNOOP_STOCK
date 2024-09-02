@@ -65,23 +65,19 @@ namespace AppStock.Controllers
         // PUT: api/Composicions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComposicion(int id, ComposicionDTO composicionDTO)
+        public async Task<ActionResult<ComposicionDTO>> PutComposicion(int id, ComposicionDTO composicionDTO)
         {
             if (id != composicionDTO.Id)
-            {
                 return BadRequest("El ID no coincide con la composicion");
-            }
 
             try
             {
                 var resultado = await _composicionService.PutComposicion(composicionDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Composicion no encontrada.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
 
             }
             catch (ArgumentException ex)
@@ -104,7 +100,7 @@ namespace AppStock.Controllers
         // POST: api/Composicions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ComposicionDTO>> PostComposicion(ComposicionDTO composicionDTO)
+        public async Task<ActionResult<int>> PostComposicion(ComposicionDTO composicionDTO)
         {
             if (composicionDTO == null)
             {
@@ -116,11 +112,9 @@ namespace AppStock.Controllers
                 var composicionId = await _composicionService.PostComposicion(composicionDTO);
 
                 if (composicionId == 0)
-                {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear la composicion.");
-                }
 
-                return CreatedAtAction(nameof(GetComposicion), new { id = composicionId }, composicionDTO);
+                return CreatedAtAction(nameof(GetComposicion), new { id = composicionId }, composicionId);
             }
             catch (ArgumentException ex)
             {
@@ -131,16 +125,14 @@ namespace AppStock.Controllers
 
         // DELETE: api/Composicions/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComposicion(int id)
+        public async Task<ActionResult<ComposicionDTO>> DeleteComposicion(int id)
         {
             var resultado = await _composicionService.DeleteComposicion(id);
 
-            if (!resultado)
-            {
-                return NotFound();
-            }
+            if (resultado == null)
+                return NotFound("Composicion no encontrada.");
 
-            return NoContent();
+            return resultado;
         }
 
         private async Task<bool> ComposicionExists(int id)
@@ -149,7 +141,7 @@ namespace AppStock.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchProducto(int id, ComposicionUpdateDTO composicionUpdateDTO)
+        public async Task<ActionResult<ComposicionDTO>> PatchProducto(int id, ComposicionUpdateDTO composicionUpdateDTO)
         {
             if (composicionUpdateDTO == null)
             {
@@ -160,16 +152,13 @@ namespace AppStock.Controllers
             {
                 var resultado = await _composicionService.PatchComposicion(id, composicionUpdateDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Composicion no encontrada.");
-                }
 
-                return NoContent();
+                return resultado;
             }
             catch (ArgumentException ex)
             {
-                // Retorna 400 Bad Request con el mensaje de error
                 return BadRequest(ex.Message);
             }
             catch (DbUpdateConcurrencyException)

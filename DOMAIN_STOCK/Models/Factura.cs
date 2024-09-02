@@ -7,7 +7,7 @@ public partial class Factura
 {
     public int Id { get; set; }
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
     public decimal Total { get; set; }
 
@@ -21,7 +21,7 @@ public partial class Factura
 
     public virtual Cliente? Cliente { get; set; }
 
-    public virtual ICollection<ItemFactura> ItemFacturas { get; set; } = new List<ItemFactura>();
+    public virtual ICollection<ItemFactura> ItemsFactura { get; set; } = new List<ItemFactura>();
 
     public virtual Usuario Vendedor { get; set; } = null!;
 }

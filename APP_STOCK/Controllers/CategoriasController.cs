@@ -8,7 +8,7 @@ namespace AppStock.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriasController : ControllerBase
+    public class CategoriasController : ControllerBase  
     {
         private readonly CategoriaService _categoriaService;
 
@@ -42,24 +42,20 @@ namespace AppStock.Controllers
         //PUT: api/Categorias/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategoria(int id, CategoriaDTO categoriaDTO)
+        public async Task<ActionResult<CategoriaDTO>> PutCategoria(int id, CategoriaDTO categoriaDTO)
         {
             if (id != categoriaDTO.Id)
-            {
                 return BadRequest("El ID de la categoria no coincide.");
-            }
 
 
             try
             {
                 var resultado = await _categoriaService.PutCategoria(categoriaDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Categoria no encontrada.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
 
             }
             catch (ArgumentException ex)
@@ -83,7 +79,7 @@ namespace AppStock.Controllers
         // POST: api/Categorias
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CategoriaDTO>> PostCategoria(CategoriaDTO categoriaDTO)
+        public async Task<ActionResult<int>> PostCategoria(CategoriaDTO categoriaDTO)
         {
 
             if (categoriaDTO == null)
@@ -96,11 +92,9 @@ namespace AppStock.Controllers
                 var categoriaId = await _categoriaService.PostCategoria(categoriaDTO);
 
                 if (categoriaId == 0)
-                {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear la categoria.");
-                }
 
-                return CreatedAtAction(nameof(GetCategoria), new { id = categoriaId }, categoriaDTO);
+                return CreatedAtAction(nameof(GetCategoria), new { id = categoriaId }, categoriaId);
             }
             catch (ArgumentException ex)
             {
@@ -111,16 +105,14 @@ namespace AppStock.Controllers
 
         // DELETE: api/Productoes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        public async Task<ActionResult<CategoriaDTO>> DeleteCategoria(int id)
         {
             var resultado = await _categoriaService.DeleteCategoria(id);
 
-            if (!resultado)
-            {
-                return NotFound();
-            }
+            if (resultado == null)
+                return NotFound("Categoria no encontrada.");
 
-            return NoContent();
+            return Ok(resultado);
         }
 
         private async Task<bool> CategoriaExists(int id)

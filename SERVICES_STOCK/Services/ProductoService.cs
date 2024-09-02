@@ -53,16 +53,14 @@ namespace Services.Services
             };
         }
 
-        public async Task<bool> PutProducto(ProductoDTO productoDTO)
+        public async Task<ProductoDTO> PutProducto(ProductoDTO productoDTO)
         {
             try
             {
                 var producto = await _productoDAO.GetProducto(productoDTO.Id);
 
                 if (producto == null)
-                {
-                    return false;
-                }
+                    return null;
 
                 producto.Detalle = productoDTO.Detalle;
                 producto.Precio = productoDTO.Precio;
@@ -83,7 +81,15 @@ namespace Services.Services
 
                 await _productoDAO.SaveChangesAsync();
 
-                return true;
+                return new ProductoDTO
+                {
+                    Id = producto.Id,
+                    Detalle = producto.Detalle,
+                    Precio = producto.Precio,
+                    CategoriaId = producto.Categoria.Id,
+                    Stock = producto.Stock,
+                    StockMinimo = producto.StockMinimo
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,10 +102,7 @@ namespace Services.Services
             var categoria = await _categoriaDAO.GetCategoria(productoDTO.CategoriaId);
 
             if (categoria == null)
-            {
-                // Retorna 400 Bad Request si la categoría no existe
                 throw new ArgumentException("La categoría proporcionada no existe.");
-            }
 
             var producto = new Producto
             {
@@ -111,7 +114,6 @@ namespace Services.Services
             };
 
             _productoDAO.AddProducto(producto);
-
             await _productoDAO.SaveChangesAsync();
 
             return producto.Id;
@@ -147,20 +149,28 @@ namespace Services.Services
             return producto.Id;
         }
 
-        public async Task<bool> DeleteProducto(int id)
+        public async Task<ProductoDTO> DeleteProducto(int id)
         {
             var producto = await _productoDAO.GetProducto(id);
 
             if (producto == null)
+                return null;
+
+            var productoDTO = new ProductoDTO
             {
-                return false;
-            }
+                Id = producto.Id,
+                Detalle = producto.Detalle,
+                Precio = producto.Precio,
+                CategoriaId = producto.Categoria.Id,
+                Stock = producto.Stock,
+                StockMinimo = producto.StockMinimo
+            };
 
             _productoDAO.DeleteProducto(producto);
 
             await _productoDAO.SaveChangesAsync();
 
-            return true;
+            return productoDTO;
         }
 
         public async Task<bool> ProductoExists(int id)
@@ -168,16 +178,14 @@ namespace Services.Services
             return await _productoDAO.ProductoExists(id);
         }
 
-        public async Task<bool> PatchProducto(int id, ProductoUpdateDTO productoUpdateDTO)
+        public async Task<ProductoDTO> PatchProducto(int id, ProductoUpdateDTO productoUpdateDTO)
         {
             try
             {
                 var producto = await _productoDAO.GetProducto(id);
 
                 if (producto == null)
-                {
-                    return false; 
-                }
+                    return null;
 
                 if (productoUpdateDTO.Detalle != null)
                     producto.Detalle = productoUpdateDTO.Detalle;
@@ -208,7 +216,15 @@ namespace Services.Services
                 _productoDAO.UpdateProducto(producto);
                 await _productoDAO.SaveChangesAsync();
 
-                return true;
+                return new ProductoDTO
+                {
+                    Id = producto.Id,
+                    Detalle = producto.Detalle,
+                    Precio = producto.Precio,
+                    CategoriaId = producto.Categoria.Id,
+                    Stock = producto.Stock,
+                    StockMinimo = producto.StockMinimo
+                };
             }
             catch (DbUpdateConcurrencyException)
             {

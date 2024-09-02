@@ -47,16 +47,14 @@ namespace Services.Services
             return await _categoriaDAO.CategoriaExists(id);
         }
 
-        public async Task<bool> PutCategoria(CategoriaDTO categoriaDTO)
+        public async Task<CategoriaDTO> PutCategoria(CategoriaDTO categoriaDTO)
         {
             try
             {
                 var categoria = await _categoriaDAO.GetCategoria(categoriaDTO.Id);
 
                 if (categoria == null)
-                {
-                    return false;
-                }
+                    return null;
 
                 categoria.Nombre = categoriaDTO.Nombre;
 
@@ -64,7 +62,11 @@ namespace Services.Services
 
                 await _categoriaDAO.SaveChangesAsync();
 
-                return true;
+                return new CategoriaDTO
+                {
+                    Id = categoria.Id,
+                    Nombre = categoria.Nombre
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -86,20 +88,23 @@ namespace Services.Services
             return categoria.Id;
         }
 
-        public async Task<bool> DeleteCategoria(int id)
+        public async Task<CategoriaDTO> DeleteCategoria(int id)
         {
             var categoria = await _categoriaDAO.GetCategoria(id);
 
             if (categoria == null)
+                return null;
+
+            var categoriaDTO = new CategoriaDTO
             {
-                return false;
-            }
+                Id = categoria.Id,
+                Nombre = categoria.Nombre
+            };
 
             _categoriaDAO.DeleteCategoria(categoria);
-
             await _categoriaDAO.SaveChangesAsync();
 
-            return true;
+            return categoriaDTO;
         }
     }
 }

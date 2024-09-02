@@ -47,16 +47,14 @@ namespace Services.Services
             };
         }
 
-        public async Task<bool> PutProveedor(ProveedorDTO proveedorDTO)
+        public async Task<ProveedorDTO> PutProveedor(ProveedorDTO proveedorDTO)
         {
             try
             {
                 var proveedor = await _proveedoresDAO.GetProveedor(proveedorDTO.Id);
 
                 if (proveedor == null)
-                {
-                    return false;
-                }
+                    return null;
 
                 proveedor.Nombre = proveedorDTO.Nombre;
                 proveedor.Telefono = proveedorDTO.Telefono;
@@ -65,11 +63,17 @@ namespace Services.Services
                 _proveedoresDAO.UpdateProveedor(proveedor);
                 await _proveedoresDAO.SaveChangesAsync();
 
-                return true;
+                return new ProveedorDTO
+                {
+                    Id= proveedor.Id,
+                    Nombre = proveedor.Nombre,
+                    Telefono = proveedor.Telefono,
+                    Mail = proveedor.Mail
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
-                return false;
+                throw;
             }
         }
 
@@ -88,31 +92,35 @@ namespace Services.Services
             return proveedor.Id;
         }
 
-        public async Task<bool> DeleteProveedor(int id)
+        public async Task<ProveedorDTO> DeleteProveedor(int id)
         {
             var proveedor = await _proveedoresDAO.GetProveedor(id);
 
             if (proveedor == null)
+                return null;
+
+            var proveedorDTO = new ProveedorDTO
             {
-                return false;
-            }
+                Id = proveedor.Id,
+                Nombre = proveedor.Nombre,
+                Telefono = proveedor.Telefono,
+                Mail = proveedor.Mail
+            };
 
             _proveedoresDAO.DeleteProveedor(proveedor);
             await _proveedoresDAO.SaveChangesAsync();
 
-            return true;
+            return proveedorDTO;
         }
 
-        public async Task<bool> PatchProveedor(int id, ProveedorUpdateDTO proveedorUpdateDTO)
+        public async Task<ProveedorDTO> PatchProveedor(int id, ProveedorUpdateDTO proveedorUpdateDTO)
         {
             try
             {
                 var proveedor = await _proveedoresDAO.GetProveedor(id);
 
                 if (proveedor == null)
-                {
-                    return false;
-                }
+                    return null;
 
                 if (proveedorUpdateDTO.Nombre != null)
                     proveedor.Nombre = proveedorUpdateDTO.Nombre;
@@ -126,11 +134,17 @@ namespace Services.Services
                 _proveedoresDAO.UpdateProveedor(proveedor);
                 await _proveedoresDAO.SaveChangesAsync();
 
-                return true;
+                return new ProveedorDTO
+                {
+                    Id = proveedor.Id,
+                    Nombre = proveedor.Nombre,
+                    Telefono = proveedor.Telefono,
+                    Mail = proveedor.Mail
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
-                return false;
+                throw;
             }
         }
 

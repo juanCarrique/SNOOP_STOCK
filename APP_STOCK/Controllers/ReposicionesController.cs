@@ -88,23 +88,19 @@ namespace AppStock.Controllers
         // PUT: api/Reposiciones/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReposicion(int id, ReposicionDTO reposicionDTO)
+        public async Task<ActionResult<ReposicionDTO>> PutReposicion(int id, ReposicionDTO reposicionDTO)
         {
             if (id != reposicionDTO.Id)
-            {
-                return BadRequest();
-            }
+                return BadRequest("Id no coincide.");
 
             try
             {
                 var resultado = await _reposicionService.PutReposicion(reposicionDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Reposicion no encontrada.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
 
             }
             catch (ArgumentException ex)
@@ -127,23 +123,19 @@ namespace AppStock.Controllers
         // POST: api/Reposiciones
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Reposicion>> PostReposicion(ReposicionDTO reposicionDTO)
+        public async Task<ActionResult<int>> PostReposicion(ReposicionDTO reposicionDTO)
         {
             if (reposicionDTO == null)
-            {
                 return BadRequest("Datos de la reposicion no proporcionados.");
-            }
 
             try
             {
                 var reposicionId = await _reposicionService.PostReposicion(reposicionDTO);
 
                 if (reposicionId == 0)
-                {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear la reposicion.");
-                }
 
-                return CreatedAtAction(nameof(GetReposicion), new { id = reposicionId }, reposicionDTO);
+                return CreatedAtAction(nameof(GetReposicion), new { id = reposicionId }, reposicionId);
             }
             catch (ArgumentException ex)
             {
@@ -154,37 +146,31 @@ namespace AppStock.Controllers
 
         // DELETE: api/Reposiciones/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReposicion(int id)
+        public async Task<ActionResult<ReposicionDTO>> DeleteReposicion(int id)
         {
             var resultado = await _reposicionService.DeleteReposicion(id);
 
-            if (!resultado)
-            {
-                return NotFound();
-            }
+            if (resultado == null)
+                return NotFound("Reposicion no encontrada.");
 
-            return NoContent();
+            return resultado;
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchReposicion(int id, ReposicionUpdateDTO reposicionUpdateDTO)
+        public async Task<ActionResult<ReposicionDTO>> PatchReposicion(int id, ReposicionUpdateDTO reposicionUpdateDTO)
         {
             if (reposicionUpdateDTO == null)
-            {
                 return BadRequest("Datos la reposicion no proporcionados.");
-            }
 
             try
             {
                 
                 var resultado = await _reposicionService.PatchReposicion(id, reposicionUpdateDTO);
 
-                if (!resultado)
-                {
+                if (resultado == null)
                     return NotFound("Reposicion no encontrada.");
-                }
 
-                return NoContent();
+                return Ok(resultado);
             }
             catch (ArgumentException ex)
             {
