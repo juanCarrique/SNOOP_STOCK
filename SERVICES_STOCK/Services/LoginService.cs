@@ -18,7 +18,7 @@ namespace Services.Services
             _context = context;
         }
     
-        public async Task<Usuario> GetUsuario(UsuarioDTO usuario)
+        public async Task<Usuario> GetUsuario(UsuarioLoginDTO usuario)
         {
             return await _context.Usuarios.
                 SingleOrDefaultAsync(x => x.Mail == usuario.Mail && x.Password == usuario.Password);
