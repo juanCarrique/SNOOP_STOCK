@@ -102,6 +102,41 @@ namespace AppStock.Controllers
 
         }
 
+        // PATCH: api/ItemsFactura/5
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<ItemFacturaDTO>> PatchItemFactura(int id, ItemFacturaUpdateDTO itemFacturaUpdateDTO)
+        {
+            if (itemFacturaUpdateDTO == null)
+                return BadRequest("Datos del item no proporcionados.");
+
+            try
+            {
+                var resultado = await _itemFacturaService.PatchItemFactura(id, itemFacturaUpdateDTO);
+
+                if (resultado == null)
+                    return NotFound("ItemFactura no encontrado.");
+
+                return Ok(resultado);
+            }
+            catch (ArgumentException ex)
+            {
+                // Retorna 400 Bad Request con el mensaje de error
+                return BadRequest(ex.Message);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await ItemFacturaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+
         // DELETE: api/ItemsFactura/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<ItemFacturaDTO>> DeleteItemFactura(int id)

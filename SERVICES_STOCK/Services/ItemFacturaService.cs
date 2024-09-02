@@ -163,7 +163,7 @@ namespace Services
             return itemFacturaDTO;
         }
 
-        private async Task<ItemFacturaDTO> PatchItemFactura(int id,ItemFacturaUpdateDTO itemFacturaUpdateDTO)
+        public async Task<ItemFacturaDTO> PatchItemFactura(int id,ItemFacturaUpdateDTO itemFacturaUpdateDTO)
         {
             var itemFactura = await _itemFacturaDAO.GetItemFactura(id);
 
