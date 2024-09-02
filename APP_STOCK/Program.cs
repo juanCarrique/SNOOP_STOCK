@@ -7,6 +7,7 @@ using System.Text;
 using Services;
 using Services.Services;
 using Microsoft.OpenApi.Models;
+using DataAccess.DAOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,12 @@ builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<ProveedoresService>();
 builder.Services.AddScoped<ReposicionService>();
+builder.Services.AddScoped<RolService>();
+builder.Services.AddScoped<UsuarioService>();
 // Agrego DAOs
+builder.Services.AddScoped<UsuarioDAO>();
+builder.Services.AddScoped<RolDAO>();
+builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
 builder.Services.AddScoped<ClienteDAO>();
 builder.Services.AddScoped<ComposicionDAO>();
@@ -65,7 +71,7 @@ builder.Services.AddScoped<ItemFacturaDAO>();
 builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<ProveedorDAO>();
 builder.Services.AddScoped<ReposicionDAO>();
-builder.Services.AddScoped<UsuarioDAO>();
+
 builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );
@@ -82,7 +88,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
         };
     });
-
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireClaim("Rol", "Admin"));
+    //[Authorize(Polocy = "Admin")]
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
