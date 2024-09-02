@@ -46,9 +46,9 @@ namespace AppStock.Controllers
 
         // GET: api/Facturas/5/Items
         [HttpGet("{id}/Items")]
-        public async Task<ActionResult<ICollection<ItemFacturaDTO>>> GetFacturaItems(int facturaId)
+        public async Task<ActionResult<ICollection<ItemFacturaDTO>>> GetFacturaItems(int id)
         {
-            var facturaItems = await _facturaService.GetFacturaItems(facturaId);
+            var facturaItems = await _facturaService.GetFacturaItems(id);
 
             if (facturaItems == null)
                 return NotFound("Factura no encontrada.");
@@ -59,7 +59,7 @@ namespace AppStock.Controllers
         // PUT: api/Facturas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<ActionResult<FacturaDTO>> putFactura(int id, FacturaDTO facturaDTO)
+        public async Task<ActionResult<FacturaDTO>> PutFactura(int id, FacturaDTO facturaDTO)
         {
             if (id != facturaDTO.Id)
                 return BadRequest("Los IDs no coinciden.");

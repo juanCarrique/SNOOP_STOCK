@@ -110,31 +110,137 @@ namespace Services
             }
         }
 
-        //TODO: Implementar POST, PATCH, DELETE ...
+        public async Task<int> PostItemFactura(ItemFacturaDTO itemFacturaDTO)
+        {
+            var producto = await _productoDAO.GetProducto(itemFacturaDTO.ProductoId);
+            var factura = await _facturaDAO.GetFactura(itemFacturaDTO.FacturaId);
+
+            if (producto == null)
+                throw new ArgumentException("Producto no encontrado.");
+
+            if (factura == null)
+                throw new ArgumentException("Factura no encontrada.");
+
+            var itemFactura = new ItemFactura
+            {
+                Cantidad = itemFacturaDTO.Cantidad,
+                Precio = itemFacturaDTO.Precio ?? producto.Precio,
+                Producto = producto,
+                Factura = factura
+            };
+
+            await ActualizarStock(itemFactura, null);
+
+            _itemFacturaDAO.AddItemFactura(itemFactura);
+            await _itemFacturaDAO.SaveChangesAsync();
+
+            return itemFactura.Id;
+        }
+
+        public async Task<ItemFacturaDTO> DeleteItemFactura(int id)
+        {
+            var itemFactura = await _itemFacturaDAO.GetItemFactura(id);
+
+            if (itemFactura == null)
+                return null;
+
+            var itemFacturaDTO = new ItemFacturaDTO
+            {
+                Id = itemFactura.Id,
+                Cantidad = itemFactura.Cantidad,
+                Precio = itemFactura.Precio,
+                ProductoId = itemFactura.ProductoId,
+                FacturaId = itemFactura.FacturaId
+            };
+
+            var producto = itemFactura.Producto;
+            producto.Stock += itemFactura.Cantidad;
+
+            _productoDAO.UpdateProducto(producto);
+            _itemFacturaDAO.DeleteItemFactura(itemFactura);
+            await _itemFacturaDAO.SaveChangesAsync();
+
+            return itemFacturaDTO;
+        }
+
+        private async Task<ItemFacturaDTO> PatchItemFactura(int id,ItemFacturaUpdateDTO itemFacturaUpdateDTO)
+        {
+            var itemFactura = await _itemFacturaDAO.GetItemFactura(id);
+
+            if (itemFactura == null)
+                return null;
+
+            if (itemFacturaUpdateDTO.FacturaId.HasValue)
+            {
+                var factura = await _facturaDAO.GetFactura(itemFacturaUpdateDTO.FacturaId ?? itemFactura.FacturaId);
+                if (factura == null)
+                    throw new ArgumentException("Factura no encontrada.");
+                itemFactura.Factura = factura;
+            }
+
+            if (itemFacturaUpdateDTO.ProductoId.HasValue)
+            {
+                var producto = await _productoDAO.GetProducto(itemFacturaUpdateDTO.ProductoId ?? itemFactura.ProductoId);
+                if (producto == null)
+                    throw new ArgumentException("Producto no encontrado.");
+                itemFactura.Producto = producto;
+            }
+
+            if (itemFacturaUpdateDTO.Cantidad.HasValue)
+                itemFactura.Cantidad = itemFacturaUpdateDTO.Cantidad ?? itemFactura.Cantidad;
+
+            if (itemFacturaUpdateDTO.Precio.HasValue)
+                itemFactura.Precio = itemFacturaUpdateDTO.Precio ?? itemFactura.Precio;
+
+            var itemFacturaDTO = new ItemFacturaDTO
+            {
+                Id = itemFactura.Id,
+                Cantidad = itemFactura.Cantidad,
+                Precio = itemFactura.Precio,
+                ProductoId = itemFactura.ProductoId,
+                FacturaId = itemFactura.FacturaId
+            };
+
+            await ActualizarStock(itemFactura, itemFacturaDTO);
+
+            _itemFacturaDAO.UpdateItemFactura(itemFactura);
+            await _itemFacturaDAO.SaveChangesAsync();
+
+            return itemFacturaDTO;
+        }
 
         private async Task ActualizarStock(ItemFactura itemFactura, ItemFacturaDTO itemFacturaDTO)
         {
-            var productoActual = itemFactura.Producto;
-
-
-            if (productoActual.Id != itemFacturaDTO.ProductoId)
+            
+            if (itemFacturaDTO != null)
             {
-                var productoNuevo = await _productoDAO.GetProducto(itemFacturaDTO.ProductoId);
+                var productoActual = itemFactura.Producto;
 
-                productoActual.Stock += itemFactura.Cantidad;
 
-                productoNuevo.Stock -= itemFacturaDTO.Cantidad;
+                if (productoActual.Id != itemFacturaDTO.ProductoId)
+                {
+                    var productoNuevo = await _productoDAO.GetProducto(itemFacturaDTO.ProductoId);
 
-                _productoDAO.UpdateProducto(productoActual);
-                _productoDAO.UpdateProducto(productoNuevo);
+                    productoActual.Stock += itemFactura.Cantidad;
 
+                    productoNuevo.Stock -= itemFacturaDTO.Cantidad;
+
+                    _productoDAO.UpdateProducto(productoActual);
+                    _productoDAO.UpdateProducto(productoNuevo);
+
+                }
+                else
+                {
+                    productoActual.Stock += itemFactura.Cantidad - itemFacturaDTO.Cantidad;
+                    _productoDAO.UpdateProducto(productoActual);
+                }
             }
             else
             {
-                productoActual.Stock += itemFactura.Cantidad - itemFacturaDTO.Cantidad;
-                _productoDAO.UpdateProducto(productoActual);
+                Producto producto = itemFactura.Producto;
+                producto.Stock -= itemFactura.Cantidad;
+                _productoDAO.UpdateProducto(producto);
             }
-
 
             await _productoDAO.SaveChangesAsync();
         }

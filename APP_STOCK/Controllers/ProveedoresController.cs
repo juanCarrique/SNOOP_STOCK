@@ -91,7 +91,7 @@ namespace AppStock.Controllers
                     if (proveedorId == 0)
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el proveedor.");
 
-                return CreatedAtAction(nameof(GetProveedor), new { id = proveedorId }, proveedorId);
+                    return CreatedAtAction(nameof(GetProveedor), new { id = proveedorId }, proveedorId);
                 }
                 catch (ArgumentException ex)
                 {

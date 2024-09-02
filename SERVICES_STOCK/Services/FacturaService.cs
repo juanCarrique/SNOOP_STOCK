@@ -37,7 +37,7 @@ namespace Services.Services
                 {
                     Id = i.Id,
                     Cantidad = i.Cantidad,
-                    ProductoId = i.Producto.Id
+                    ProductoId = i.ProductoId
                 }).ToList()
             }).ToList();
 
@@ -87,6 +87,15 @@ namespace Services.Services
                 if (factura == null)
                     return null;
 
+                var cliente = await _clienteDAO.GetCliente(facturaDTO.ClienteId.Value);
+                if (cliente == null)
+                    throw new ArgumentException($"Cliente con id:{facturaDTO.ClienteId} no encontrado.");
+
+                var vendedor = await _usuarioDAO.GetUsuario(facturaDTO.VendedorId);
+                if (vendedor == null)
+                    throw new ArgumentException($"Vendedor con id:{facturaDTO.VendedorId} no encontrado.");
+
+
                 //Primero devuelvo el stock de los productos viejos de la factura
                 await ActualizarStockFactura(factura, false);
 
@@ -96,8 +105,8 @@ namespace Services.Services
                 factura.Total = itemsFactura.Sum(i => i.Precio * i.Cantidad);
                 factura.Numero = facturaDTO.Numero;
                 factura.Tipo = facturaDTO.Tipo;
-                factura.Cliente = await _clienteDAO.GetCliente(facturaDTO.ClienteId.Value);
-                factura.Vendedor = await _usuarioDAO.GetUsuario(facturaDTO.VendedorId);
+                factura.Cliente = cliente;
+                factura.Vendedor = vendedor;
                 factura.ItemsFactura = itemsFactura;
 
                 //Actualizo el stock de los nuevos productos de la factura
@@ -161,10 +170,18 @@ namespace Services.Services
                 factura.Tipo = facturaUpdateDTO.Tipo;
             
             if (facturaUpdateDTO.ClienteId.HasValue)
-                factura.Cliente = await _clienteDAO.GetCliente(facturaUpdateDTO.ClienteId.Value);
+            {
+                var cliente = await _clienteDAO.GetCliente(facturaUpdateDTO.ClienteId.Value);
+                if (cliente == null)
+                    throw new ArgumentException($"Cliente con id:{facturaUpdateDTO.ClienteId} no encontrado.");
+            }
 
             if (facturaUpdateDTO.VendedorId.HasValue)
-                factura.Vendedor = await _usuarioDAO.GetUsuario(facturaUpdateDTO.VendedorId.Value);
+            {
+                var vendedor = await _usuarioDAO.GetUsuario(facturaUpdateDTO.VendedorId.Value);
+                if (vendedor == null)
+                    throw new ArgumentException($"Vendedor con id:{facturaUpdateDTO.VendedorId} no encontrado.");
+            }
 
             if (facturaUpdateDTO.ItemsFactura != null)
             {
@@ -245,7 +262,7 @@ namespace Services.Services
                     Cantidad = itemDTO.Cantidad,
                     Producto = producto,
                     Factura = factura,
-                    Precio = itemDTO.Precio
+                    Precio = itemDTO.Precio ?? producto.Precio
                 };
 
                 itemsFactura.Add(itemFactura);
@@ -279,7 +296,7 @@ namespace Services.Services
                     Cantidad = itemDTO.Cantidad,
                     Producto = producto,
                     Factura = factura,
-                    Precio = itemDTO.Precio
+                    Precio = itemDTO.Precio ?? producto.Precio
                 };
 
                 itemsFactura.Add(itemFacturaDTO);

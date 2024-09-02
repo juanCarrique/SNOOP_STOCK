@@ -89,7 +89,7 @@ namespace AppStock.Controllers
                 if (resultado == 0)
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error al crear el producto.");
 
-                return CreatedAtAction("GetCliente", new { id = resultado }, resultado);
+                return CreatedAtAction(nameof(GetCliente), new { id = resultado }, resultado);
 
             }
             catch (ArgumentException ex)

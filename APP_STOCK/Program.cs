@@ -47,20 +47,25 @@ builder.Services.AddSwaggerGen(c => // esto remplaza a builder.Services.AddEndpo
 });
 
 // Agrego servicios
-builder.Services.AddScoped<ProductoService>();
-builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<ComposicionService>();
+builder.Services.AddScoped<ItemFacturaService>();
+builder.Services.AddScoped<FacturaService>();
+builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<ProveedoresService>();
 builder.Services.AddScoped<ReposicionService>();
-builder.Services.AddScoped<ClienteService>();
 // Agrego DAOs
-builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<CategoriaDAO>();
+builder.Services.AddScoped<ClienteDAO>();
 builder.Services.AddScoped<ComposicionDAO>();
+builder.Services.AddScoped<FacturaDAO>();
+builder.Services.AddScoped<ItemFacturaDAO>();
+builder.Services.AddScoped<ProductoDAO>();
 builder.Services.AddScoped<ProveedorDAO>();
 builder.Services.AddScoped<ReposicionDAO>();
-builder.Services.AddScoped<ClienteDAO>();
+builder.Services.AddScoped<UsuarioDAO>();
 builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );

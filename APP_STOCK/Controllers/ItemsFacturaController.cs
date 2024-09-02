@@ -83,26 +83,35 @@ namespace AppStock.Controllers
         [HttpPost]
         public async Task<ActionResult<ItemFacturaDTO>> PostItemFactura(ItemFacturaDTO itemFactura)
         {
-            _context.ItemsFactura.Add(itemFactura);
-            await _context.SaveChangesAsync();
+            if(itemFactura == null)
+                return BadRequest("ItemFactura no puede ser nulo.");
 
-            return CreatedAtAction("GetItemFactura", new { id = itemFactura.Id }, itemFactura);
+            try
+            {
+                var resultado = await _itemFacturaService.PostItemFactura(itemFactura);
+                if (resultado == 0)
+                    return NotFound("No se pudo agregar el ItemFactura.");
+
+                return CreatedAtAction(nameof(GetItemFactura), new { id = resultado }, resultado); ;
+            }
+            catch (ArgumentException ex)
+            {
+                // Retorna 400 Bad Request con el mensaje de error
+                return BadRequest(ex.Message);
+            }
+
         }
 
         // DELETE: api/ItemsFactura/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteItemFactura(int id)
+        public async Task<ActionResult<ItemFacturaDTO>> DeleteItemFactura(int id)
         {
-            var itemFactura = await _context.ItemsFactura.FindAsync(id);
-            if (itemFactura == null)
-            {
-                return NotFound();
-            }
+            var resultado = await _itemFacturaService.DeleteItemFactura(id);
+            
+            if (resultado == null)
+                return NotFound("No se encontro el ItemFactura");
 
-            _context.ItemsFactura.Remove(itemFactura);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return resultado;
         }
 
         private async Task<bool> ItemFacturaExists(int id)
