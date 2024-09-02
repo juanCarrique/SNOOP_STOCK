@@ -59,7 +59,11 @@ builder.Services.AddScoped<ProveedoresService>();
 builder.Services.AddScoped<ReposicionService>();
 builder.Services.AddScoped<RolService>();
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<TipoMovimientoService>();
+builder.Services.AddScoped<HistorialMovimientoService>();
 // Agrego DAOs
+builder.Services.AddScoped<HistorialMovimientoDAO>();
+builder.Services.AddScoped<TipoMovimientoDAO>();
 builder.Services.AddScoped<UsuarioDAO>();
 builder.Services.AddScoped<RolDAO>();
 builder.Services.AddScoped<ProductoDAO>();
