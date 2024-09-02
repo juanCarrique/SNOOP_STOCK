@@ -7,7 +7,7 @@ using DataAccess.Context;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess.DAOs
+namespace DataAccess
 {
     public class UsuarioDAO
     {
@@ -17,7 +17,7 @@ namespace DataAccess.DAOs
         {
             _context = context;
         }
-
+      
         public async Task<IEnumerable<Usuario>> GetUsuarios()
         {
             return await _context.Usuarios.ToListAsync();

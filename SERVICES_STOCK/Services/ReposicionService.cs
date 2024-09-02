@@ -84,18 +84,16 @@ namespace Services.Services
             };
         }
 
-        public async Task<bool> PutReposicion(ReposicionDTO reposicionDTO)
+        public async Task<ReposicionDTO> PutReposicion(ReposicionDTO reposicionDTO)
         {
             try
             {
                 var reposicion = await _reposicionDAO.GetReposicion(reposicionDTO.Id);
 
                 if (reposicion == null)
-                {
-                    return false;
-                }
+                    return null;
 
-                if(!await _productoDAO.ProductoExists(reposicionDTO.ProductoId))
+                if (!await _productoDAO.ProductoExists(reposicionDTO.ProductoId))
                 {
                     throw new ArgumentException("Producto no encontrado");
                 }
@@ -118,11 +116,17 @@ namespace Services.Services
                 _reposicionDAO.UpdateReposicion(reposicion);
                 await _reposicionDAO.SaveChangesAsync();
 
-                return true;
+                return new ReposicionDTO
+                {
+                    Id = reposicionDTO.Id,
+                    ProductoId = reposicion.Producto.Id,
+                    ProveedorId = reposicion.Proveedor.Id,
+                    Cantidad = reposicion.Cantidad
+                };
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
 
@@ -159,28 +163,34 @@ namespace Services.Services
             return reposicion.Id;
         }
 
-        public async Task<bool> DeleteReposicion(int id)
+        public async Task<ReposicionDTO> DeleteReposicion(int id)
         {
             var reposicion = await _reposicionDAO.GetReposicion(id);
 
             if (reposicion == null)
-            {
-                return false;
-            }
+                return null;
 
             // Actualizo el stock del producto
             var producto = await _productoDAO.GetProducto(reposicion.ProductoId);
             producto.Stock -= reposicion.Cantidad;
+
+            var reposicionDTO = new ReposicionDTO
+            {
+                Id = reposicion.Id,
+                ProductoId = reposicion.Producto.Id,
+                ProveedorId = reposicion.Proveedor.Id,
+                Cantidad = reposicion.Cantidad
+            };
 
             _reposicionDAO.DeleteReposicion(reposicion);
             _productoDAO.UpdateProducto(producto);
 
             await _reposicionDAO.SaveChangesAsync();
 
-            return true;
+            return reposicionDTO;
         }
 
-        public async Task<bool> PatchReposicion(int id, ReposicionUpdateDTO reposicionUpdateDTO)
+        public async Task<ReposicionDTO> PatchReposicion(int id, ReposicionUpdateDTO reposicionUpdateDTO)
         {
             try
             {
@@ -188,9 +198,7 @@ namespace Services.Services
 
 
                 if (reposicion == null)
-                {
-                    return false;
-                }               
+                    return null;
 
                 if (reposicionUpdateDTO.ProveedorId.HasValue) 
                 {
@@ -215,11 +223,17 @@ namespace Services.Services
                 _reposicionDAO.UpdateReposicion(reposicion);
                 await _reposicionDAO.SaveChangesAsync();
 
-                return true;
+                return new ReposicionDTO
+                {
+                    Id = reposicion.Id,
+                    ProductoId = reposicion.Producto.Id,
+                    ProveedorId = reposicion.Proveedor.Id,
+                    Cantidad = reposicion.Cantidad
+                };
             }
             catch (Exception)
             {
-                throw new ArgumentException("errorazo");
+                return null;
             }
         }
 

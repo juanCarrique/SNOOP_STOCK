@@ -24,7 +24,7 @@ namespace DataAccess.Context
 
         public virtual DbSet<HistorialMovimiento> HistorialMovimientos { get; set; }
 
-        public virtual DbSet<ItemFactura> ItemFacturas { get; set; }
+        public virtual DbSet<ItemFactura> ItemsFactura { get; set; }
 
         public virtual DbSet<Permiso> Permisos { get; set; }
 
@@ -162,12 +162,12 @@ namespace DataAccess.Context
                     .HasColumnName("precio");
                 entity.Property(e => e.ProductoId).HasColumnName("productoId");
 
-                entity.HasOne(d => d.Factura).WithMany(p => p.ItemFacturas)
+                entity.HasOne(d => d.Factura).WithMany(p => p.ItemsFactura)
                     .HasForeignKey(d => d.FacturaId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ItemF_Factura");
 
-                entity.HasOne(d => d.Producto).WithMany(p => p.ItemFacturas)
+                entity.HasOne(d => d.Producto).WithMany(p => p.ItemsFactura)
                     .HasForeignKey(d => d.ProductoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ItemF_Producto");

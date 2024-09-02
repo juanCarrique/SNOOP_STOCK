@@ -66,16 +66,14 @@ namespace Services.Services
             return productosDTO;
         }
 
-        public async Task<bool> PutComposicion(ComposicionDTO composicionDTO)
+        public async Task<ComposicionDTO> PutComposicion(ComposicionDTO composicionDTO)
         {
             try
             {
                 var composicion = await _composicionDAO.GetComposicion(composicionDTO.Id);
 
                 if (composicion == null)
-                {
-                    return false;
-                }
+                    return null;
 
                 composicion.Cantidad = composicionDTO.Cantidad;
 
@@ -101,7 +99,13 @@ namespace Services.Services
 
                 await _composicionDAO.SaveChangesAsync();
 
-                return true;
+                return new ComposicionDTO
+                {
+                    Id = composicionDTO.Id,
+                    ProductoId = composicionDTO.ProductoId,
+                    ComponenteId = composicionDTO.ComponenteId,
+                    Cantidad = composicionDTO.Cantidad
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -138,20 +142,25 @@ namespace Services.Services
             return composicion.Id;
         }
 
-        public async Task<bool> DeleteComposicion(int id)
+        public async Task<ComposicionDTO> DeleteComposicion(int id)
         {
             var composicion = await _composicionDAO.GetComposicion(id);
 
             if (composicion == null)
+                return null;
+
+            var composicionDTO = new ComposicionDTO
             {
-                return false;
-            }
+                Id = composicion.Id,
+                ProductoId = composicion.Producto.Id,
+                ComponenteId = composicion.Componente.Id,
+                Cantidad = composicion.Cantidad
+            };
 
             _composicionDAO.DeleteComposicion(composicion);
-
             await _composicionDAO.SaveChangesAsync();
 
-            return true;
+            return composicionDTO;
         }
 
         public async Task<bool> ComposicionExists(int id)
@@ -159,16 +168,14 @@ namespace Services.Services
             return await _composicionDAO.ComposicionExists(id);
         }
 
-        public async Task<bool> PatchComposicion(int id, ComposicionUpdateDTO composicionUpdateDTO)
+        public async Task<ComposicionDTO> PatchComposicion(int id, ComposicionUpdateDTO composicionUpdateDTO)
         {
             try
             {
                 var composicion = await _composicionDAO.GetComposicion(id);
 
                 if (composicion == null)
-                {
-                    return false;
-                }
+                    return null;
 
 
                 if (composicionUpdateDTO.Cantidad != null)
@@ -204,7 +211,13 @@ namespace Services.Services
                 _composicionDAO.UpdateComposicion(composicion);
                 await _composicionDAO.SaveChangesAsync();
 
-                return true;
+                return new ComposicionDTO
+                {
+                    Id = composicion.Id,
+                    ProductoId = composicion.Producto.Id,
+                    ComponenteId = composicion.Componente.Id,
+                    Cantidad = composicion.Cantidad
+                };
             }
             catch (DbUpdateConcurrencyException)
             {
