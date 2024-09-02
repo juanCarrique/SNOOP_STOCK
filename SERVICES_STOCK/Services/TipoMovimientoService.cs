@@ -1,4 +1,6 @@
 ﻿using DataAccess.DAOs;
+using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Services.DTOs;
 using System;
 using System.Collections.Generic;
@@ -44,24 +46,27 @@ namespace Services.Services
         {
             return await _tipoMovimientoDAO.TipoMovimientoExists(id);
         }
-        public async Task<bool> PutTipoMovimiento(TipoMovimientoDTO tipoMovimientoDTO)
+        public async Task<TipoMovimientoDTO> PutTipoMovimiento(TipoMovimientoDTO tipoMovimientoDTO)
         {
             try
             {
                 var tipoMovimiento = await _tipoMovimientoDAO.GetTipoMovimiento(tipoMovimientoDTO.Id);
                 if (tipoMovimiento == null)
-                {
-                    return false;
-                }
+                    return null;
                 tipoMovimiento.Nombre = tipoMovimientoDTO.Nombre;
                 tipoMovimiento.Descripcion = tipoMovimientoDTO.Descripcion;
                 _tipoMovimientoDAO.UpdateTipoMovimiento(tipoMovimiento);
                 await _tipoMovimientoDAO.SaveChangesAsync();
-                return true;
+                return new TipoMovimientoDTO
+                {
+                    Id = tipoMovimiento.Id,
+                    Nombre = tipoMovimiento.Nombre,
+                    Descripcion = tipoMovimiento.Descripcion
+                };
             }
-            catch (Exception)
+            catch (DbUpdateConcurrencyException)
             {
-                return false;
+                throw;
             }
         }
         public async Task<int> PostTipoMovimiento(TipoMovimientoDTO tipoMovimientoDTO)
@@ -75,16 +80,22 @@ namespace Services.Services
             await _tipoMovimientoDAO.SaveChangesAsync();
             return tipoMovimiento.Id;
         }
-        public async Task<bool> DeleteTipoMovimiento(int id)
+        public async Task<TipoMovimientoDTO> DeleteTipoMovimiento(int id)
         {
             var tipoMovimiento = await _tipoMovimientoDAO.GetTipoMovimiento(id);
             if (tipoMovimiento == null)
             {
-                return false;
+                return null;
             }
+            var tipoMovimientoDTO = new TipoMovimientoDTO
+            {
+                Id = tipoMovimiento.Id,
+                Nombre = tipoMovimiento.Nombre,
+                Descripcion = tipoMovimiento.Descripcion
+            };
             _tipoMovimientoDAO.DeleteTipoMovimiento(tipoMovimiento);
             await _tipoMovimientoDAO.SaveChangesAsync();
-            return true;
+            return tipoMovimientoDTO;
         }
     }
 }

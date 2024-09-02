@@ -58,7 +58,7 @@ namespace AppStock.Controllers
             try
             {
                 var result = await _tipoMovimientoService.PutTipoMovimiento(tipoMovimientoDTO);
-                if (!result)
+                if (result == null)
                 {
                     return NotFound("Tipo de movimiento no encontrado.");
                 }
@@ -115,9 +115,9 @@ namespace AppStock.Controllers
         {
             var resultado = await _tipoMovimientoService.DeleteTipoMovimiento(id);
 
-            if (!resultado)
+            if (resultado == null)
             {
-                return NotFound();
+                return NotFound("Tipo de movimiento no encontrado.");
             }
 
             return NoContent();
