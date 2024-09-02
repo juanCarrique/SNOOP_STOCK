@@ -63,7 +63,7 @@ namespace AppStock.Controllers
 
                 if (!resultado)
                 {
-                    return NotFound("Categoria no encontrada.");
+                    return NotFound("Rol no encontrado.");
                 }
 
                 return NoContent();
@@ -94,7 +94,7 @@ namespace AppStock.Controllers
 
             if (rolDTO == null)
             {
-                return BadRequest("Datos de la categoria no proporcionados.");
+                return BadRequest("Datos del rol no proporcionados.");
             }
 
             try

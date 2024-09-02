@@ -23,18 +23,18 @@ namespace AppStock.Controllers
         }
 
         [HttpPost("authenticate")]
-        public async Task<ActionResult> Login(UsuarioDTO usuario)
+        public async Task<ActionResult> Login(UsuarioLoginDTO usuario)
         {
             var user = await loginService.GetUsuario(usuario);
             if (user == null)
             {
                 return BadRequest(new { message = "Credenciales invalidas." });
             }
-            string jwtToken = GenerateToken(user);
-            return Ok(new { token = jwtToken }); //TODO aca iria expiration 
+            var (jwtToken, expiration) = GenerateToken(user);
+            return Ok(new { token = jwtToken, expiration = expiration }); //TODO aca iria expiration 
         }
 
-        private string GenerateToken(Usuario usuario)
+        private (string, DateTime) GenerateToken(Usuario usuario)
         {
             var claims = new[]
             {
@@ -52,13 +52,16 @@ namespace AppStock.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
+            var expiration = DateTime.Now.AddMinutes(60);
+
             var securityToken = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(60), // TODO esto es solo para el back
+                expires: expiration,
                 signingCredentials: creds
             );
+
             string token = new JwtSecurityTokenHandler().WriteToken(securityToken);
-            return token;
+            return (token, expiration);
         }
     }
 }

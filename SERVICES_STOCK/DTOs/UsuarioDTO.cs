@@ -8,7 +8,19 @@ namespace Services.DTOs
 {
     public class UsuarioDTO
     {
-        public String Mail { get; set; } = null!;
-        public String Password { get; set; } = null!;
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+
+        public string Apellido { get; set; } = null!;
+
+        public string? Mail { get; set; }
+
+        public string? Telefono { get; set; }
+
+        public string Password { get; set; } = null!;
+
+        public int RolId { get; set; }
+
+        public bool Estado { get; set; }
     } 
 }
