@@ -38,6 +38,18 @@ namespace DataAccess
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Producto>> GetProductosCompuestos()
+        {
+            var composiciones = await _context.Composiciones
+                .Include(c => c.Producto)
+                .Include(c => c.Componente)
+                .ToListAsync();
+
+            var productos = composiciones.Select(c => c.Producto).Distinct().ToList();
+
+            return productos;
+        }
+
         public void AddComposicion(Composicion composicion)
         {
             _context.Composiciones.Add(composicion);

@@ -11,18 +11,21 @@ namespace Services.Services
         private readonly ProductoDAO _productoDAO;
         private readonly ClienteDAO _clienteDAO;
         private readonly UsuarioDAO _usuarioDAO;
+        private readonly ProductoService _productoService;
 
         public FacturaService(FacturaDAO facturaDAO, 
             ItemFacturaDAO itemFacturaDAO, 
             ProductoDAO productoDAO, 
             ClienteDAO clienteDAO, 
-            UsuarioDAO usuarioDAO)
+            UsuarioDAO usuarioDAO,
+            ProductoService productoService)
         {
             _facturaDAO = facturaDAO;
             _itemFacturaDAO = itemFacturaDAO;
             _productoDAO = productoDAO;
             _clienteDAO = clienteDAO;
             _usuarioDAO = usuarioDAO;
+            _productoService = productoService;
         }
 
         public async Task<IEnumerable<FacturaDTO>> GetFacturas()
@@ -265,6 +268,7 @@ namespace Services.Services
                     Precio = itemDTO.Precio ?? producto.Precio
                 };
 
+
                 itemsFactura.Add(itemFactura);
                 _itemFacturaDAO.AddItemFactura(itemFactura);
             }
@@ -310,29 +314,13 @@ namespace Services.Services
 
         private async Task ActualizarStockFactura(Factura factura, bool bajoStock)
         {
+            var diferenciaStock = bajoStock ? -1 : 1;
 
-            //TODO: utilizar el servio de producto para actualizar el stock (asi manejar productos compuestos)
-            if (bajoStock)
+            foreach (ItemFactura item in factura.ItemsFactura)
             {
-                foreach (ItemFactura item in factura.ItemsFactura)
-                {
-                    Producto producto = await _productoDAO.GetProducto(item.Producto.Id);
-                    producto.Stock -= item.Cantidad;
-                    _productoDAO.UpdateProducto(producto);
-                }
-
+                Producto producto = await _productoDAO.GetProducto(item.Producto.Id);
+                await _productoService.ActualizarStockProducto(producto, item.Cantidad * diferenciaStock);
             }
-            else
-            {
-                foreach (ItemFactura item in factura.ItemsFactura)
-                {
-                    Producto producto = await _productoDAO.GetProducto(item.Producto.Id);
-                    producto.Stock += item.Cantidad;
-                    _productoDAO.UpdateProducto(producto);
-                }
-            }
-
-            await _productoDAO.SaveChangesAsync();
         }
     }
 }

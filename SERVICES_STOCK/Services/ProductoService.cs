@@ -277,5 +277,23 @@ namespace Services.Services
             await _composicionDAO.SaveChangesAsync();
 
         }
+
+        public async Task ActualizarStockProducto(Producto producto, int diferenciaStock)
+        {
+            var productosCompuestos = await _composicionDAO.GetProductosCompuestos();
+            if (productosCompuestos.Any(p => p.Id == producto.Id))
+            {
+                var componentes = await _composicionDAO.GetComposicionesByProductoId(producto.Id);
+                foreach (var componente in componentes)
+                {
+                    await ActualizarStockProducto(componente.Componente, componente.Cantidad * diferenciaStock);
+                }
+            }
+            
+            producto.Stock += diferenciaStock;
+            _productoDAO.UpdateProducto(producto);
+            await _productoDAO.SaveChangesAsync();
+
+        }
     }
 }
