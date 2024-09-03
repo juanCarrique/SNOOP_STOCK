@@ -8,6 +8,8 @@ using Services;
 using Services.Services;
 using Microsoft.OpenApi.Models;
 using DataAccess.DAOs;
+using Domain.Models;
+using System.Reflection.Emit;
 
 var builder = WebApplication.CreateBuilder(args);
 

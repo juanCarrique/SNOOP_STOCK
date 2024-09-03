@@ -82,11 +82,11 @@ namespace Services
                 if (itemFactura == null)
                     return null;
 
-
-                var factura = await _facturaDAO.GetFactura(itemFacturaDTO.FacturaId);
+                var facturaVieja = itemFactura.Factura;
+                var facturaNueva = await _facturaDAO.GetFactura(itemFacturaDTO.FacturaId);
                 var producto = await _productoDAO.GetProducto(itemFacturaDTO.ProductoId);
 
-                if (factura == null)
+                if (facturaNueva == null)
                     throw new ArgumentException("Factura no encontrada.");
 
                 if(producto == null)
@@ -94,12 +94,21 @@ namespace Services
 
                 await ActualizarStock(itemFactura, itemFacturaDTO);
 
-                itemFactura.Factura = factura;
+                facturaVieja.ItemsFactura.Remove(itemFactura);
+                itemFactura.Factura = facturaNueva;
+                facturaNueva.ItemsFactura.Add(itemFactura);
                 itemFactura.Producto = producto;
                 itemFactura.Cantidad = itemFacturaDTO.Cantidad;
                 itemFactura.Precio = itemFacturaDTO.Precio ?? itemFactura.Precio;
                 itemFactura.Producto = producto;
 
+                await ActualizarTotalFactura(facturaNueva);
+                await ActualizarTotalFactura(facturaVieja);
+
+                _facturaDAO.UpdateFactura(facturaVieja);
+                _facturaDAO.UpdateFactura(facturaNueva);
+                _itemFacturaDAO.UpdateItemFactura(itemFactura);
+                await _itemFacturaDAO.SaveChangesAsync();
 
                 return new ItemFacturaDTO
                 {
@@ -137,6 +146,10 @@ namespace Services
 
             await ActualizarStock(itemFactura, null);
 
+            factura.ItemsFactura.Add(itemFactura);
+            await ActualizarTotalFactura(factura);
+
+            _facturaDAO.UpdateFactura(factura);
             _itemFacturaDAO.AddItemFactura(itemFactura);
             await _itemFacturaDAO.SaveChangesAsync();
 
@@ -162,6 +175,12 @@ namespace Services
             // Devuelvo el stock del producto
             await DevolverStock(itemFactura);
 
+
+            var factura = itemFactura.Factura;
+            factura.ItemsFactura.Remove(itemFactura);
+            await ActualizarTotalFactura(factura);
+
+            _facturaDAO.UpdateFactura(factura);
             _itemFacturaDAO.DeleteItemFactura(itemFactura);
             await _itemFacturaDAO.SaveChangesAsync();
 
@@ -177,10 +196,19 @@ namespace Services
 
             if (itemFacturaUpdateDTO.FacturaId.HasValue)
             {
-                var factura = await _facturaDAO.GetFactura(itemFacturaUpdateDTO.FacturaId ?? itemFactura.FacturaId);
-                if (factura == null)
+                var facturaVieja = itemFactura.Factura;
+
+                var facturaNueva = await _facturaDAO.GetFactura(itemFacturaUpdateDTO.FacturaId ?? itemFactura.FacturaId);
+                if (facturaNueva == null)
                     throw new ArgumentException("Factura no encontrada.");
-                itemFactura.Factura = factura;
+
+
+                facturaVieja.ItemsFactura.Remove(itemFactura);
+                itemFactura.Factura = facturaNueva;
+                facturaNueva.ItemsFactura.Add(itemFactura);
+
+                await ActualizarTotalFactura(facturaVieja);
+                _facturaDAO.UpdateFactura(facturaVieja);
             }
 
             if (itemFacturaUpdateDTO.ProductoId.HasValue)
@@ -207,7 +235,9 @@ namespace Services
             };
 
             await ActualizarStock(itemFactura, itemFacturaDTO);
+            await ActualizarTotalFactura(itemFactura.Factura);
 
+            _facturaDAO.UpdateFactura(itemFactura.Factura);
             _itemFacturaDAO.UpdateItemFactura(itemFactura);
             await _itemFacturaDAO.SaveChangesAsync();
 
@@ -218,6 +248,11 @@ namespace Services
         {
             var producto = itemFactura.Producto;
             await _productoService.ActualizarStockProducto(producto, itemFactura.Cantidad);
+        }
+
+        private async Task ActualizarTotalFactura(Factura factura)
+        {
+            factura.Total = factura.ItemsFactura.Sum(i => i.Cantidad * i.Precio);
         }
 
         private async Task ActualizarStock(ItemFactura itemFactura, ItemFacturaDTO itemFacturaDTO)

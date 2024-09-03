@@ -7,7 +7,7 @@ using Services;
 
 namespace AppStock.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductosController : ControllerBase

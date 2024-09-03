@@ -128,14 +128,27 @@ namespace Services.Services
 
         public async Task<int> PostFactura(FacturaDTO facturaDTO)
         {
-            //Creo la factura
+
+            Cliente cliente = null;
+            if(facturaDTO.ClienteId.HasValue)
+            {
+                cliente = await _clienteDAO.GetCliente(facturaDTO.ClienteId.Value);
+                if (cliente == null)
+                    throw new ArgumentException($"Cliente con id:{facturaDTO.ClienteId} no encontrado.");
+            }
+
+            var vendedor = await _usuarioDAO.GetUsuario(facturaDTO.VendedorId);
+            if (vendedor == null)
+                throw new ArgumentException($"Vendedor con id:{facturaDTO.VendedorId} no encontrado.");
+
+            // Creo la factura
             var factura = new Factura
             {
                 Fecha = facturaDTO.Fecha ?? DateTime.Now,
-                Numero = facturaDTO.Numero, //TODO: Generar un numero de factura
+                Numero = facturaDTO.Numero, // TODO: Generar un numero de factura
                 Tipo = facturaDTO.Tipo,
-                Cliente = await _clienteDAO.GetCliente(facturaDTO.ClienteId.Value),
-                Vendedor = await _usuarioDAO.GetUsuario(facturaDTO.VendedorId)
+                Cliente = cliente,
+                Vendedor = vendedor
             };
 
             // Creo los itemsFactura
@@ -144,14 +157,13 @@ namespace Services.Services
             factura.ItemsFactura = itemsFactura;
             factura.Total = itemsFactura.Sum(i => i.Precio * i.Cantidad);
 
-            //Actualizo el stock de los productos
+            // Actualizo el stock de los productos
             await ActualizarStockFactura(factura, true);
 
-            _facturaDAO.AddFactura(factura);
-            await _facturaDAO.SaveChangesAsync();
-                
 
-            return factura.Id;
+            await _facturaDAO.SaveChangesAsync();
+
+            return factura.Id;  
         }
 
         public async Task<FacturaDTO> PatchFactura(int id, FacturaUpdateDTO facturaUpdateDTO)
@@ -237,6 +249,10 @@ namespace Services.Services
                 }).ToList()
             };
 
+            var itemsFactura = factura.ItemsFactura.ToList();
+            foreach (ItemFactura item in itemsFactura)
+                _itemFacturaDAO.DeleteItemFactura(item);
+
             _facturaDAO.DeleteFactura(factura);
             await _facturaDAO.SaveChangesAsync();
 
@@ -318,7 +334,7 @@ namespace Services.Services
 
             foreach (ItemFactura item in factura.ItemsFactura)
             {
-                Producto producto = await _productoDAO.GetProducto(item.Producto.Id);
+                Producto producto = await _productoDAO.GetProducto(item.ProductoId);
                 await _productoService.ActualizarStockProducto(producto, item.Cantidad * diferenciaStock);
             }
         }
