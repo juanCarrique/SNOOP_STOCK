@@ -1,6 +1,7 @@
 ﻿using DataAccess;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,17 @@ namespace Services
         private readonly ItemFacturaDAO _itemFacturaDAO;
         private readonly ProductoDAO _productoDAO;
         private readonly FacturaDAO _facturaDAO;
+        private readonly ProductoService _productoService;
 
-        public ItemFacturaService(ItemFacturaDAO itemFacturaDAO, ProductoDAO productoDAO, FacturaDAO facturaDAO)
+        public ItemFacturaService(ItemFacturaDAO itemFacturaDAO, 
+            ProductoDAO productoDAO,
+            FacturaDAO facturaDAO,
+            ProductoService productoService)
         {
             _itemFacturaDAO = itemFacturaDAO;
             _productoDAO = productoDAO;
             _facturaDAO = facturaDAO;
+            _productoService = productoService;
         }
 
         public async Task<IEnumerable<ItemFacturaDTO>> GetItemsFactura()
@@ -153,10 +159,9 @@ namespace Services
                 FacturaId = itemFactura.FacturaId
             };
 
-            var producto = itemFactura.Producto;
-            producto.Stock += itemFactura.Cantidad;
+            // Devuelvo el stock del producto
+            await DevolverStock(itemFactura);
 
-            _productoDAO.UpdateProducto(producto);
             _itemFacturaDAO.DeleteItemFactura(itemFactura);
             await _itemFacturaDAO.SaveChangesAsync();
 
@@ -209,6 +214,12 @@ namespace Services
             return itemFacturaDTO;
         }
 
+        private async Task DevolverStock(ItemFactura itemFactura)
+        {
+            var producto = itemFactura.Producto;
+            await _productoService.ActualizarStockProducto(producto, itemFactura.Cantidad);
+        }
+
         private async Task ActualizarStock(ItemFactura itemFactura, ItemFacturaDTO itemFacturaDTO)
         {
             
@@ -221,28 +232,26 @@ namespace Services
                 {
                     var productoNuevo = await _productoDAO.GetProducto(itemFacturaDTO.ProductoId);
 
-                    productoActual.Stock += itemFactura.Cantidad;
+                    // Devuelvo el stock del producto actual
+                    await _productoService.ActualizarStockProducto(productoActual, itemFactura.Cantidad);
 
-                    productoNuevo.Stock -= itemFacturaDTO.Cantidad;
-
-                    _productoDAO.UpdateProducto(productoActual);
-                    _productoDAO.UpdateProducto(productoNuevo);
+                    // Resto el stock del producto nuevo
+                    await _productoService.ActualizarStockProducto(productoNuevo, itemFacturaDTO.Cantidad * -1);
 
                 }
                 else
                 {
-                    productoActual.Stock += itemFactura.Cantidad - itemFacturaDTO.Cantidad;
-                    _productoDAO.UpdateProducto(productoActual);
+                    // Actualizo el stock del producto con la diferencia de cantidad
+                    var diferencia = itemFactura.Cantidad - itemFacturaDTO.Cantidad;
+                    await _productoService.ActualizarStockProducto(productoActual, diferencia);
                 }
             }
             else
             {
                 Producto producto = itemFactura.Producto;
-                producto.Stock -= itemFactura.Cantidad;
-                _productoDAO.UpdateProducto(producto);
+                await _productoService.ActualizarStockProducto(producto, itemFactura.Cantidad * -1);
             }
 
-            await _productoDAO.SaveChangesAsync();
         }
 
         public async Task<bool> ItemFacturaExists(int id)
