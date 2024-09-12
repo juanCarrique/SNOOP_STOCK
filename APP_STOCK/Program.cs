@@ -82,6 +82,21 @@ builder.Services.AddDbContext<StockappContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Connection"))
 );
 
+// Configuración de CORS (Cross-Origin Resource Sharing)
+builder.Services.AddCors(options =>
+{
+    // Definición de una nueva política de CORS llamada "NuevaPolitica"
+    options.AddPolicy("NuevaPolitica", app =>
+    {
+        // Permitir cualquier origen, cualquier encabezado y cualquier método HTTP
+        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+//Permitir cualquier origen, cualquier encabezado y cualquier método HTTP significa que la política de CORS configurada
+//permite que cualquier aplicación web, sin importar su dominio de origen, pueda hacer solicitudes a tu API. Además,
+//no se restringen los tipos de encabezados HTTP ni los métodos HTTP (GET, POST, PUT, DELETE, etc.)
+//que se pueden usar en las solicitudes.
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -109,6 +124,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("NuevaPolitica");
 
 // Habilitar autenticaci�n y autorizaci�n
 app.UseAuthentication();
